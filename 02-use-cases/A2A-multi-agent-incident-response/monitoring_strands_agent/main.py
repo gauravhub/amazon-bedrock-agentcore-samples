@@ -11,9 +11,6 @@ import uvicorn
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-ssm = boto3.client("ssm")
-agentcore_client = boto3.client("bedrock-agentcore")
-
 # Configuration with validation
 MODEL_ID = os.getenv("MODEL_ID", "global.anthropic.claude-haiku-4-5-20251001-v1:0")
 
