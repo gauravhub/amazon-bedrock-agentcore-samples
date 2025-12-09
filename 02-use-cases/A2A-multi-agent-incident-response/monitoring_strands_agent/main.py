@@ -11,6 +11,21 @@ import uvicorn
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Filter out noisy a2a.server traces
+try:
+    from opentelemetry import trace
+    from opentelemetry.sdk.trace import TracerProvider
+    from trace_filter import A2AServerSpanFilter
+
+    provider = trace.get_tracer_provider()
+    if isinstance(provider, TracerProvider) and provider._active_span_processor:
+        original_processor = provider._active_span_processor
+        filtered_processor = A2AServerSpanFilter(original_processor)
+        provider._active_span_processor = filtered_processor
+        logger.info("✅ Filtering a2a.server traces")
+except Exception as e:
+    logger.debug(f"Trace filtering not applied: {e}")
+
 # Configuration with validation
 MODEL_ID = os.getenv("MODEL_ID", "global.anthropic.claude-haiku-4-5-20251001-v1:0")
 
